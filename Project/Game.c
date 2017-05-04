@@ -176,18 +176,24 @@ void f1CarAdvance(MovLayer *ml, Region *fence)
     ml->layer->posNext = newPos;
   } /**< for ml */
 }
-
+int currentScore = 0;
+char scoreToPrint[2] = "00";
 void scorePoints(MovLayer *f1Car, MovLayer *layerObjective){
   Vec2 newPos;
   u_char axis;
   Region f1CarShapeBoundary;
   Region objectiveShapeBoundary;
+  
   abShapeGetBounds(f1Car->layer->abShape, &f1Car->layer->posNext, &f1CarShapeBoundary);
   for(; layerObjective; layerObjective = layerObjective->next){
     vec2Add(&newPos, &layerObjective->layer->pos, &layerObjective->velocity);
     abShapeGetBounds(layerObjective->layer->abShape, &newPos, &objectiveShapeBoundary);
     if(abShapeCheck(layerObjective->layer->abShape, &layerObjective->layer->pos, &f1CarShapeBoundary.botRight)){
-      drawString5x7(screenWidth/2 + 10, screenHeight/2 + 10, "HI", COLOR_WHITE, COLOR_BLUE);
+      //      drawString5x7(screenWidth/2 + 10, screenHeight/2 + 10, "HI", COLOR_WHITE, COLOR_BLUE);
+      currentScore++;
+      scoreToPrint[1] = '0' + currentScore;
+      drawString5x7(15, screenHeight/2- 10, scoreToPrint, COLOR_WHITE, COLOR_BLUE);
+     
     }	
   }
 }
@@ -210,6 +216,7 @@ void main()
   configureClocks();
   lcd_init();
   shapeInit();
+  // buzzer_init();
   p2sw_init(15);
 
   shapeInit();
@@ -217,13 +224,10 @@ void main()
   layerInit(&layerObjective);
   layerDraw(&layerObjective);
 
-
   layerGetBounds(&fieldLayer, &fieldFence);
-
 
   enableWDTInterrupts();      /**< enable periodic interrupt */
   or_sr(0x8);	              /**< GIE (enable interrupts) */
-
 
   for(;;) { 
     while (!redrawScreen) { /**< Pause CPU if screen doesn't need updating */
@@ -234,7 +238,7 @@ void main()
     P1OUT |= GREEN_LED;       /**< Green led on when CPU on */
     redrawScreen = 0;
     movement = 0;
-    //    scorePoints(&ml0, &ml3);
+    scorePoints(&ml0, &ml3);
     
     movLayerDraw(&ml0, &f1car);
     movLayerDraw(&ml3, &layerObjective);
