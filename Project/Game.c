@@ -15,7 +15,7 @@
 #include <abCircle.h>
 //#include <stdio.h>
 //#include <stdlib.h>
-//#include "buzzer.h"
+#include "buzzer.h"
 
 #define GREEN_LED BIT6
 
@@ -216,7 +216,7 @@ void main()
   configureClocks();
   lcd_init();
   shapeInit();
-  // buzzer_init();
+  buzzer_init();
   p2sw_init(15);
 
   shapeInit();
@@ -229,7 +229,8 @@ void main()
   enableWDTInterrupts();      /**< enable periodic interrupt */
   or_sr(0x8);	              /**< GIE (enable interrupts) */
 
-  for(;;) { 
+  for(;;) {
+    buzzer_set_period(0);
     while (!redrawScreen) { /**< Pause CPU if screen doesn't need updating */
       P1OUT &= ~GREEN_LED;    /**< Green led off witHo CPU */
       or_sr(0x10);	      /**< CPU OFF */
@@ -253,15 +254,14 @@ void switch_interrupt_handler(){
   sw4_down = (p2val & SW4) ? 0 : 1;
 
   if(sw3_down){
+    buzzer_set_period(800);
     movement = -10;
     f1CarAdvance(&ml0,&fieldFence);
-    //    redrawScreen = 1;
-    // play_first();
   }
-  if(sw4_down){
+  if(sw4_down){ 
+    buzzer_set_period(1000);
     movement = 10;
     f1CarAdvance(&ml0,&fieldFence);
-    // redrawScreen = 1;
   }
 }
 
