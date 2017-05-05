@@ -24,7 +24,6 @@
 #define SW3 BIT2
 #define SW4 BIT3
 
-char sw1_down, sw2_down, sw3_down, sw4_down;
 int movement;
 
 AbRect car = {abRectGetBounds, abRectCheck, {6,10}}; /**< 10x10 rectangle */
@@ -248,10 +247,10 @@ void main()
 
 void switch_interrupt_handler(){
   char p2val = p2sw_read();
-  sw1_down = (p2val & SW1) ? 0 : 1;
-  sw2_down = (p2val & SW2) ? 0 : 1;
-  sw3_down = (p2val & SW3) ? 0 : 1;
-  sw4_down = (p2val & SW4) ? 0 : 1;
+  char sw1_down = (p2val & SW1) ? 0 : 1;
+  char sw2_down = (p2val & SW2) ? 0 : 1;
+  char sw3_down = (p2val & SW3) ? 0 : 1;
+  char sw4_down = (p2val & SW4) ? 0 : 1;
 
   if(sw3_down){
     buzzer_set_period(800);
@@ -263,8 +262,7 @@ void switch_interrupt_handler(){
     movement = 10;
     f1CarAdvance(&ml0,&fieldFence);
   }
-}
-
+} 
 /** Watchdog timer interrupt handler. 15 interrupts/sec */
 void wdt_c_handler()
 {
